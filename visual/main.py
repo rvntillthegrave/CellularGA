@@ -41,6 +41,7 @@ initial_grid = np.zeros((ABS_SIZE, ABS_SIZE), dtype=int)
 initial_grid[ABS_SIZE // 2, ABS_SIZE // 2] = 1
 
 ca = CellularAutomaton(ABS_SIZE, ABS_SIZE, initial_grid)
+#ca.randomize_grid()
 
 """ 
 NASTAVENÍ SIMULACE CELULARNÍHO AUTOMATU
@@ -48,10 +49,10 @@ rule_string - pravidla celulárního automatu
 max_gen - nastavení délky simulace 
 update_rate - rychlost simulace
 """
-rule_string = "B023457/S03456"
+rule_string = "B02678/S0346"
 generation = 0
-max_gen = 25
-update_rate = 1.9
+max_gen = 100
+update_rate = 2.5
 last_update = pygame.time.get_ticks()
 
 current_directory = os.path.dirname(__file__)

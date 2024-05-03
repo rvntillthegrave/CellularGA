@@ -6,7 +6,7 @@ from cellularAutomaton import CellularAutomaton
 
 
 class GeneticAlgorithm:
-    def __init__(self, rows, cols, population_size=100, mutation_rate=0.02, generations=100):
+    def __init__(self, rows, cols, population_size=150, mutation_rate=0.01, generations=100):
         self.population_size = population_size
         self.mutation_rate = mutation_rate
         self.gens = generations
@@ -51,22 +51,22 @@ class GeneticAlgorithm:
         """ 
         SIMULACE CELULÁRNÍHO AUTOMATU
         
-        local_ca.maxCount - CO NEJVĚTŠÍ ČETNOST ŽIVÝCH BUNĚK NA MŘÍŽCE V PRŮBĚHU SIMULACE
-        local_ca.minCount - CO NEJMENŠÍ ČETNOST ŽIVÝCH BUNĚK NA MŘÍŽCE V PRŮBĚHU SIMULACE
         local_ca.minCountAlter - CO NEJMENŠÍ ČETNOST ŽIVÝCH BUNĚK NA MŘÍŽCE V PRŮBĚHU SIMULACE 
                                  \A ZÁROVEŇ ALEPSOŇ JEDNA ŽIVÁ PŘI KAŽDÉ GENRACI
         local_ca.maxDiv - CO NEJVĚTŠÍ ROZDÍL MEZI DVĚMI PO SOBĚ JDOUCÍMI MŘÍŽKAMI
+        local_ca.carpet_fitness - ZAJÍMAVÉ VZORY A SYMETRIE
+        local_ca.alternating_pattern - ŠACHOVNICOVÝ VZOR
         ------------------------------------------------------------------------------------
         SIMULATES A CELLULAR AUTOMATON
         
-        local_ca.maxCount - MAXIMUM NUMBER OF LIVE CELLS ON THE GRID DURING THE SIMULATION
-        local_ca.minCount - THE LOWEST NUMBER OF LIVE CELLS ON THE GRID DURING THE SIMULATION
         local_ca.minCountAlter - THE LOWEST NUMBER OF LIVE CELLS ON THE GRID DURING THE SIMULATION 
                                  \AND AT LEAST ONE LIVE CELL AT EACH GENERATION
         local_ca.maxDiv - THE LARGEST DIFFERENCE BETWEEN TWO CONSECUTIVE GRIDS
+        local_ca.carpet_fitness - INTERESTING PATTERNS AND SYMMETRIES
+        local_ca.alternating_pattern - CHECKERBOARD PATTERN
         """
         local_ca = CellularAutomaton(self.ca.rows, self.ca.cols) 
-        return local_ca.carpet_fitness_alter(rule_string, self.gens)  
+        return local_ca.alternating_pattern(rule_string, self.gens)
     
     def evaluate_fitness(self):
         """ 
@@ -83,11 +83,42 @@ class GeneticAlgorithm:
                 results.append((fitness_value, rule_string))
         return results
 
-    def select_parents(self, fitness_values):
+    def select_parents(self, fitness_values, tournament_size=2):
         """ 
-        VÝBĚR DVOU RODIČŮ PRO KŘÍŽENÍ (METODA VÁŽENÉ RULETY)
-        ----------------------------------------------------
-        SELECTS TWO PARENTS FOR CROSSBREEDING (WEIGHTED ROULETTE METHOD)
+        VÝBĚR DVOU RODIČŮ PRO KŘÍŽENÍ (METODA VÁŽENÉ RULETY NEBO TURNAJE)
+        PRO SELEKCI TURNAJOVOU NASTAVIT DO PROMĚNNÉ selection = 't'
+        PRO SELEKCI VÁŽENOU RULETOU NASTAVIT DO PROMĚNNÉ selection = 'r'
+        ------------------------------------------------------------------
+        SELECTS TWO PARENTS FOR CROSSBREEDING (WEIGHTED ROULETTE OR TOURNAMENT SELECTION)
+        FOR TOURNAMENT SELECTION SET VARIABLE selection = 't'
+        FOR TOURNAMENT SELECTION SET VARIABLE selection = 'r'
+        """
+        selection = 't'
+        
+        if selection == "t":
+            return self.tournament_selection(fitness_values, tournament_size)
+        elif selection == "r":
+            return self.roulette_selection(fitness_values)
+
+    def tournament_selection(self, fitness_values, tournament_size):
+        """ 
+        TURNAJOVA SELEKCE
+        """
+        def tournament():
+            participants = random.sample(fitness_values, tournament_size)
+            winner = max(participants, key=lambda participant: participant[0])
+            return winner
+
+        parent1 = tournament()
+        parent2 = tournament()
+        while parent1 == parent2: 
+            parent2 = tournament()
+        print(parent1, parent2)
+        return [parent1, parent2]
+
+    def roulette_selection(self, fitness_values):
+        """ 
+        SELEKCE VAZENOU RULETOU
         """
         total_fitness = sum(fitness for fitness, _ in fitness_values)
         probabilities = [fitness / total_fitness for fitness, _ in fitness_values]
