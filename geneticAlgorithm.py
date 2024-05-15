@@ -6,10 +6,12 @@ from cellularAutomaton import CellularAutomaton
 
 
 class GeneticAlgorithm:
-    def __init__(self, rows, cols, population_size=150, mutation_rate=0.01, generations=100):
+    def __init__(self, rows, cols, population_size, mutation_rate, cagens, selection, fitfun):
         self.population_size = population_size
         self.mutation_rate = mutation_rate
-        self.gens = generations
+        self.gens = cagens
+        self.selection = selection
+        self.fitfun = fitfun
         self.population = [self.generate_rule_string() for _ in range(population_size)]
         self.ca = CellularAutomaton(rows, cols)
 
@@ -51,22 +53,31 @@ class GeneticAlgorithm:
         """ 
         SIMULACE CELULÁRNÍHO AUTOMATU
         
-        local_ca.minCountAlter - CO NEJMENŠÍ ČETNOST ŽIVÝCH BUNĚK NA MŘÍŽCE V PRŮBĚHU SIMULACE 
+        local_ca.min_count_alter - CO NEJMENŠÍ ČETNOST ŽIVÝCH BUNĚK NA MŘÍŽCE V PRŮBĚHU SIMULACE 
                                  \A ZÁROVEŇ ALEPSOŇ JEDNA ŽIVÁ PŘI KAŽDÉ GENRACI
-        local_ca.maxDiv - CO NEJVĚTŠÍ ROZDÍL MEZI DVĚMI PO SOBĚ JDOUCÍMI MŘÍŽKAMI
-        local_ca.carpet_fitness - ZAJÍMAVÉ VZORY A SYMETRIE
+        local_ca.max_div - CO NEJVĚTŠÍ ROZDÍL MEZI DVĚMI PO SOBĚ JDOUCÍMI MŘÍŽKAMI
+        local_ca.symetry_fitness - ZAJÍMAVÉ VZORY A SYMETRIE
         local_ca.alternating_pattern - ŠACHOVNICOVÝ VZOR
         ------------------------------------------------------------------------------------
         SIMULATES A CELLULAR AUTOMATON
         
-        local_ca.minCountAlter - THE LOWEST NUMBER OF LIVE CELLS ON THE GRID DURING THE SIMULATION 
+        local_ca.min_count_alter - THE LOWEST NUMBER OF LIVE CELLS ON THE GRID DURING THE SIMULATION 
                                  \AND AT LEAST ONE LIVE CELL AT EACH GENERATION
-        local_ca.maxDiv - THE LARGEST DIFFERENCE BETWEEN TWO CONSECUTIVE GRIDS
-        local_ca.carpet_fitness - INTERESTING PATTERNS AND SYMMETRIES
+        local_ca.max_div - THE LARGEST DIFFERENCE BETWEEN TWO CONSECUTIVE GRIDS
+        local_ca.symetry_fitness - INTERESTING PATTERNS AND SYMMETRIES
         local_ca.alternating_pattern - CHECKERBOARD PATTERN
         """
-        local_ca = CellularAutomaton(self.ca.rows, self.ca.cols) 
-        return local_ca.alternating_pattern(rule_string, self.gens)
+        local_ca = CellularAutomaton(self.ca.rows, self.ca.cols)
+        if self.fitfun == "min":
+            return local_ca.min_count_alter(rule_string, self.gens)
+        elif self.fitfun == "div":
+            return local_ca.max_div(rule_string, self.gens)
+        elif self.fitfun == "sym":
+            return local_ca.symetry_fitness(rule_string, self.gens)
+        elif self.fitfun == "alt":
+            return local_ca.alternating_pattern(rule_string, self.gens)
+        else:
+            print("NEPLATNÉ NASTAVENÍ FITNESS FUNKCE")
     
     def evaluate_fitness(self):
         """ 
@@ -93,11 +104,9 @@ class GeneticAlgorithm:
         FOR TOURNAMENT SELECTION SET VARIABLE selection = 't'
         FOR TOURNAMENT SELECTION SET VARIABLE selection = 'r'
         """
-        selection = 't'
-        
-        if selection == "t":
+        if self.selection == "t":
             return self.tournament_selection(fitness_values, tournament_size)
-        elif selection == "r":
+        elif self.selection == "r":
             return self.roulette_selection(fitness_values)
 
     def tournament_selection(self, fitness_values, tournament_size):
@@ -113,7 +122,6 @@ class GeneticAlgorithm:
         parent2 = tournament()
         while parent1 == parent2: 
             parent2 = tournament()
-        print(parent1, parent2)
         return [parent1, parent2]
 
     def roulette_selection(self, fitness_values):
@@ -144,7 +152,7 @@ class GeneticAlgorithm:
         
         child1 = f'B{child1_b}/S{child1_s}'
         child2 = f'B{child2_b}/S{child2_s}'
-
+        
         if not self.check_rule(child1):
             child1 = self.sort_and_remove_duplicates(child1)
         if not self.check_rule(child2):
@@ -152,20 +160,22 @@ class GeneticAlgorithm:
         return child1, child2
 
     def mutate(self, individual):
-        """ 
-        OPERÁTOR MUTACE - POKUD JE NÁHODNĚ VYBRANÉ ČÍSLO VĚTŠÍ JAKO self.mutation_rate DOCHÁZÍ K MUTACI GENU
-        -----------------------------------------------------------------------------------------------------
-        MUTATION OPERATOR - IF THE RANDOMLY SELECTED NUMBER IS LARGER THAN self.mutation_rate ONE GENE IS MUTATED
+        """
+        OPERÁTOR MUTACE - POKUD JE NÁHODNĚ VYBRANÉ ČÍSLO MENŠÍ NEŽ self.mutation_rate, DOCHÁZÍ K MUTACI GENU.
+        -------------------------------------------------------------------------------------------------------
+        MUTATION OPERATOR - IF A RANDOMLY SELECTED NUMBER IS LESS THAN self.mutation_rate, A GENE IS MUTATED.
         """
         if random.random() < self.mutation_rate:
             b, s = individual.split('/')
             b_numbers = b[1:]
             s_numbers = s[1:]
 
-            if random.random() < 0.5: 
-                target_list = b_numbers
+            if random.random() < 0.5:
+                target_list = list(b_numbers)
+                part = 'B'
             else:
-                target_list = s_numbers
+                target_list = list(s_numbers)
+                part = 'S'
 
             available_positions = [i for i in range(len(target_list))]
 
@@ -173,22 +183,24 @@ class GeneticAlgorithm:
                 return individual
 
             selected_position = random.choice(available_positions)
-            mutated_gene = random.choice(target_list)
+            existing_genes = set(target_list)
+            new_gene = str(random.randint(0, 8))
 
-            mutated_list = list(target_list)
-            mutated_list[selected_position] = mutated_gene
-            
-            if target_list is b_numbers:
-                mutated_b = 'B' + ''.join(mutated_list)
-                mutated_individual = mutated_b + '/' + s
+            while new_gene in existing_genes:
+                new_gene = str(random.randint(0, 8))
+
+            target_list[selected_position] = new_gene
+
+            if part == 'B':
+                mutated_individual = f'B{"".join(target_list)}/S{s_numbers}'
             else:
-                mutated_s = 'S' + ''.join(mutated_list)
-                mutated_individual = b + '/' + mutated_s
-                
-            return mutated_individual
+                mutated_individual = f'B{b_numbers}/S{"".join(target_list)}'
+
+
+            return self.sort_and_remove_duplicates(mutated_individual)
         else:
-            return individual
-       
+            return self.sort_and_remove_duplicates(individual)
+  
     def evolve(self, generations):
         """ 
         PROCES EVOLUCE - URČENÍ FITNESS HODNOTY, SELEKCE RODIČOVSÝCH PRAVIDEL, PROCES KŘÍŽENÍ, MUTACE.
