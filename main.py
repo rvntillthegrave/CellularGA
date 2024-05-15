@@ -7,7 +7,7 @@ if __name__ == "__main__":
         rows - POČET BUNĚK V ŘÁDKU
         cols - POČET BUNĚK V SLOUPCI
         -----------------------------
-        DIMENSIONS OF THE CELLULAR AUTOMAT GRID
+        DIMENSIONS OF THE CELLULAR AUTOMATON GRID
         rows - NUMBER OF CELLS IN A ROW
         cols - NUMBER OF CELLS IN A COLUMN
         
@@ -20,13 +20,13 @@ if __name__ == "__main__":
         MUTACE
         mutation_rate - PRAVDĚPODOBNOST MUTACE CHROMOZOMU (0.1 = 1 %)
         -------------------------------------------------------------
-        MUTATUIN
+        MUTATION
         mutation_rate - CHROMOSOME MUTATION RATE (0.1 = 1%)
         
         DÉLKA SIMULACE PRAVIDLA PRO CELULÁRNÍ AUTOMAT
         cagens - POČET GENERACÍ, PO KTERÉ BUDE CELULÁRNÍ AUTOMAT S JEDNOTLIVÝM PRAVIDLEM SIMULOVÁN
         -----------------------------------------------------------------------------------------------
-        SIMULATION RULE LENGTH FOR CELLULAR AUTOMATON
+        SIMULATION LENGTH FOR CELLULAR AUTOMATON WITH DEFINED RULE
         cagens - NUMBER OF GENERATIONS FOR WHICH A CELLULAR AUTOMATON WITH A UNIFIED RULE WILL BE SIMULATED
 
         SELEKCE
