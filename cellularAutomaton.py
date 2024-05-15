@@ -18,16 +18,31 @@ class CellularAutomaton:
         self.survival_rules = []
 
     def randomize_grid(self, probability=0.3):
+        """ 
+        NÁHODNÉ POČÁTEČNÍ NASTAVENÍ MŘÍŽKY
+        ----------------------------------
+        RANDOM INITIAL GRID SETTING
+        """
         random_grid = np.random.rand(self.rows, self.cols)
         self.grid = (random_grid < probability).astype(int)
-        
+    
     def initialize_center_cell(self):
+        """ 
+        NASTAVENÍ POČÁTEČNÍ MŘÍŽKY NA JEDNU ŽIVOU BUŇKU UPROSTŘED
+        -----------------------------------------------------------
+        SETTING THE INITIAL GRID TO ONE LIVE CELL IN THE MIDDLE
+        """
         self.grid = np.zeros((self.rows, self.cols), dtype=int)
         center_row = self.rows // 2
         center_col = self.cols // 2
         self.grid[center_row, center_col] = 1
 
     def apply_rules(self, rule_string):
+        """ 
+        POUŽITÍ PRAVIDEL PRO MŘÍŽKU A VYTVOŘENÍ NASTÁVÁJÍCÍ MŘÍŽKY
+        -----------------------------------------------------------
+        APPLYING GRID RULES AND CREATING THE RESULTING GRID
+        """
         if not re.match(r'^B\d+/S\d+$', rule_string):
             raise ValueError("Invalid rule format. Expected 'Bxxx/Sxxx'.")
         b, s = rule_string.split('/')
@@ -46,6 +61,11 @@ class CellularAutomaton:
         self.next_grid = new_grid
 
     def count_neighbors(self, x, y):
+        """ 
+        VÝPOČET ŽIVÝCH BUNĚK V SOUSEDSTVÍ
+        -----------------------------------
+        CALCULATION OF LIVING CELLS IN THE NEIGHBOURHOOD
+        """
         count = 0
         for i in range(-1, 2):
             for j in range(-1, 2):
@@ -56,20 +76,23 @@ class CellularAutomaton:
         return count
 
     def min_count_alter(self, rule_string, generations):
+        """ 
+        FITNESS FUNKCE - Nejmenší četnost živých buněk a zároveň alespoň jedna buňka živá
+        ----------------------------------------------------------------------------------
+        FITNESS FUNCTION - Least number of living cells and at least one living cell
+        """
         self.randomize_grid()
         cell_count = 0
         min_living_cells = float('inf')
         generations_survived = 0
 
-        for gen in range(generations):
+        for _ in range(generations):
             self.apply_rules(rule_string)
-            
-            if gen >= generations - 25:
-                living_cells = np.sum(self.grid)
-                cell_count += living_cells
-                if living_cells > 0:
-                    generations_survived += 1
-                    min_living_cells = min(min_living_cells, living_cells)
+            living_cells = np.sum(self.grid)
+            cell_count += living_cells
+            if living_cells > 0:
+                generations_survived += 1
+                min_living_cells = min(min_living_cells, living_cells)
             
             self.grid = self.next_grid
 
@@ -79,6 +102,11 @@ class CellularAutomaton:
             return int(10000 / min_living_cells) if min_living_cells > 0 else 0
 
     def max_div(self, rule_string, generations):
+        """ 
+        FITNESS FUNKCE - Co největší rozdílnost hodnot v dvou po sobě jdoucích mřížkách
+        --------------------------------------------------------------------------------
+        FITNESS FUNCTION - Maximize the difference between two consecutive grids
+        """
         self.randomize_grid()
         self.apply_rules(rule_string)
         prev_grid = np.copy(self.grid)
@@ -97,45 +125,50 @@ class CellularAutomaton:
 
         return int(count_div)
 
-    def carpet_fitness(self, rule_string, generations):
+    def symetry_fitness(self, rule_string, generations):
+        """ 
+        FITNESS FUNKCE - Symetrie a zajímavé vzory
+        -------------------------------------------
+        FITNESS FUNCTION - Symmetry and interesting patterns
+        """
         self.initialize_center_cell()
 
-        symmetry = 0
-        complexity = 0
+        complexity_score = 0
         pattern_score = 0
-        density = 0
+        density_score = 0
+        diversity_score = 0
+        penalty = 0
 
         prev_grid = self.grid.copy()
+        previous_states = set()
 
         for gen in range(generations):
             self.apply_rules(rule_string)
 
-            if gen >= generations - 10:
-                symmetry += np.sum(np.abs(self.grid - np.fliplr(self.grid))) + np.sum(np.abs(self.grid - np.flipud(self.grid)))
-                complexity += np.sum(np.abs(self.grid - prev_grid))
+            current_state = self.grid.tostring()
+            if current_state in previous_states:
+                penalty += 50
+            previous_states.add(current_state)
 
-                for i in range(self.rows):
-                    for j in range(self.cols):
-                        if self.grid[i, j] == 1:
-                            if i < self.rows // 2:
-                                if self.grid[self.rows - i - 1, j] == 1:
-                                    pattern_score += 1
-                            if j < self.cols // 2:
-                                if self.grid[i, self.cols - j - 1] == 1:
-                                    pattern_score += 1
-                            if i < self.rows // 2 and j < self.cols // 2:
-                                if self.grid[self.rows - i - 1, self.cols - j - 1] == 1:
-                                    pattern_score += 1
-                density += np.sum(self.grid) / (self.rows * self.cols)
+            complexity_score += np.sum(np.abs(self.grid - prev_grid))
+
+            pattern_score += (self.rows * self.cols - np.sum(np.abs(self.grid - np.fliplr(self.grid))) - np.sum(np.abs(self.grid - np.flipud(self.grid)))) / (self.rows * self.cols)
+
+            density_score += np.sum(self.grid) / (self.rows * self.cols)
+            diversity_score += len(set(self.grid.flatten()))
 
             prev_grid = self.grid.copy()
             self.grid = self.next_grid
 
-        fitness = complexity * pattern_score * density / (symmetry + 1)
-        return int(fitness / 100000)
-    
+        total_score = complexity_score + pattern_score + density_score * diversity_score - penalty
+        return max(0, int(total_score / (10 + 0.1 * (self.rows - 11) ** 2)))
+        
     def alternating_pattern(self, rule_string, generations):
-        #self.randomize_grid()
+        """ 
+        FITNESS FUNKCE - Šachovnicový vzor
+        ----------------------------------------
+        FITNESS FUNCTION - Checkerboard pattern
+        """
         self.initialize_center_cell()
         pattern_score = 0
 
@@ -144,12 +177,12 @@ class CellularAutomaton:
             self.grid = self.next_grid.copy()
 
             if gen >= generations - 20:
-                for i in range(self.rows - 1):
-                    for j in range(self.cols - 1):
-                        subgrid = self.grid[i:i+2, j:j+2]
-                        if (np.array_equal(subgrid, np.array([[1, 0], [0, 1]])) or
-                            np.array_equal(subgrid, np.array([[0, 1], [1, 0]]))):
-                            pattern_score += 1
+                checkerboard1 = np.indices((self.rows, self.cols)).sum(axis=0) % 2
+                checkerboard2 = 1 - checkerboard1
 
-        fitness = pattern_score / 10
-        return fitness
+                match1 = np.sum(self.grid == checkerboard1)
+                match2 = np.sum(self.grid == checkerboard2)
+
+                pattern_score = max(match1, match2) / (self.rows * self.cols)
+
+        return (pattern_score - 0.5)*100        
