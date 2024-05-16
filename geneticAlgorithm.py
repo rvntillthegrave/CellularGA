@@ -1,7 +1,6 @@
 import random
 from concurrent.futures import ThreadPoolExecutor
 import operator
-import numpy as np 
 from cellularAutomaton import CellularAutomaton
 
 

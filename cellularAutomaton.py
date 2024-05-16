@@ -1,7 +1,5 @@
 import numpy as np
 import re
-import scipy
-import scipy.ndimage
 
 
 class CellularAutomaton:
