@@ -61,7 +61,7 @@ if __name__ == "__main__":
     """
     start_time = time.time()
     ga = GeneticAlgorithm(rows=9, cols=9, population_size=150, 
-                          mutation_rate=0.01, cagens=100, selection="t", fitfun="sym")
+                          mutation_rate=0.01, cagens=100, selection="t", fitfun="alt")
     best_rule_string = ga.evolve(generations=30)
     end_time = time.time()
     elapsed_time = end_time - start_time

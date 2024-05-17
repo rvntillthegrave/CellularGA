@@ -93,11 +93,13 @@ class CellularAutomaton:
                 min_living_cells = min(min_living_cells, living_cells)
             
             self.grid = self.next_grid
+        
+        fitness = int(10000 / min_living_cells) if min_living_cells > 0 else 0
 
         if generations_survived < generations:
             return 0
         else:
-            return int(10000 / min_living_cells) if min_living_cells > 0 else 0
+            return fitness
 
     def max_div(self, rule_string, generations):
         """ 
@@ -120,8 +122,10 @@ class CellularAutomaton:
                 prev_grid = np.copy(self.grid)
             
             self.grid = self.next_grid
+            
+        fitness = int(count_div)
 
-        return int(count_div)
+        return fitness
 
     def symetry_fitness(self, rule_string, generations):
         """ 
@@ -159,7 +163,9 @@ class CellularAutomaton:
             self.grid = self.next_grid
 
         total_score = complexity_score + pattern_score + density_score * diversity_score - penalty
-        return max(0, int(total_score / (10 + 0.1 * (self.rows - 11) ** 2)))
+        fitness = max(0, int(total_score / (10 + 0.1 * (self.rows - 11) ** 2)))
+        
+        return fitness
         
     def alternating_pattern(self, rule_string, generations):
         """ 
@@ -182,5 +188,7 @@ class CellularAutomaton:
                 match2 = np.sum(self.grid == checkerboard2)
 
                 pattern_score = max(match1, match2) / (self.rows * self.cols)
+            
+            fitness = (pattern_score - 0.5)*100
 
-        return (pattern_score - 0.5)*100        
+        return fitness     
