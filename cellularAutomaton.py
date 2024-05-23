@@ -34,6 +34,17 @@ class CellularAutomaton:
         center_row = self.rows // 2
         center_col = self.cols // 2
         self.grid[center_row, center_col] = 1
+        
+    def count_live_dead(self):
+        """ 
+        VÝPOČET ŽIVÝCH A MRTVÝCH BUNĚK
+        -------------------------------
+        SUM OF LIVING AND DEAD CELLS
+        
+        """
+        live_count = np.sum(self.grid)
+        dead_count = np.size(self.grid) - live_count
+        return live_count, dead_count
 
     def apply_rules(self, rule_string):
         """ 
