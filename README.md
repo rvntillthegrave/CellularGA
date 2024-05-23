@@ -69,7 +69,3 @@ This script generates graphs to visualize the number of live cells over generati
 
 - [@rvntillgrave](https://github.com/rvntillthegrave)
 
-## Authors
-
-- [@rvntillgrave](https://github.com/rvntillthegrave)
-
