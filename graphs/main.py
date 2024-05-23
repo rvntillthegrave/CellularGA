@@ -8,7 +8,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from cellularAutomaton import CellularAutomaton
 
 ABS_SIZE = 11
-rule_string = "B01245/S03"
+""" 
+NASTAVENÍ PRAVIDLA
+rule_string - pravidlo aplikované k vytvoření grafu
+-----------------------------------------------------
+RULE SETTINGS
+rule_string - rule applied to create the graph
+"""
+rule_string = "B0567/S1248"
 
 def run_simulation():
     live_counts = []
@@ -17,8 +24,17 @@ def run_simulation():
     initial_grid[ABS_SIZE // 2, ABS_SIZE // 2] = 1
 
     ca = CellularAutomaton(ABS_SIZE, ABS_SIZE, initial_grid)
-    #ca.initialize_center_cell()
-    ca.randomize_grid()
+    """ 
+    ca.initialize_center_cell() - nastavení počátečního stavu na živou buňku uprostřed
+    ca.randomize_grid() - nastavení počátečního stavu náhodného
+    JE NUTNO ZAKOMENTOVAT TO, KTERÉ NENÍ POUŽÍVÁNO
+    --------------------------------------------------------------
+    ca.initialize_center_cell() - setting the initial state to the live cell in the center
+    ca.randomize_grid() - set the initial state to random
+    IT IS NECESSARY TO COMMENT THAT WHICH IS NOT USED
+    """
+    ca.initialize_center_cell()
+    #ca.randomize_grid()
     
     live, _ = ca.count_live_dead()
     live_counts.append(live)
@@ -36,7 +52,7 @@ def run_simulation():
 
 live_counts = run_simulation()
 
-fig, ax = plt.subplots(figsize=(10, 4))
+fig, ax = plt.subplots(figsize=(10, 3))
 ax.plot(live_counts, 'k-', label='Živé buňky', linewidth=2)
 ax.set_xlabel('Generace')
 ax.set_ylabel('Počet živých buněk')
