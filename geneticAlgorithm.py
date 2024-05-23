@@ -111,6 +111,8 @@ class GeneticAlgorithm:
     def tournament_selection(self, fitness_values, tournament_size):
         """ 
         TURNAJOVA SELEKCE
+        ---------------------
+        TOURNAMENT SELECTION
         """
         def tournament():
             participants = random.sample(fitness_values, tournament_size)
@@ -126,6 +128,8 @@ class GeneticAlgorithm:
     def roulette_selection(self, fitness_values):
         """ 
         SELEKCE VAZENOU RULETOU
+        --------------------------
+        WEIGHTED RULLETE SELECTION
         """
         total_fitness = sum(fitness for fitness, _ in fitness_values)
         probabilities = [fitness / total_fitness for fitness, _ in fitness_values]
