@@ -21,7 +21,8 @@ Ensure you have these libraries installed before running the scripts.
 
 ### cellularAutomaton.py
 
-This script defines the `CellularAutomaton` class, which simulates a cellular automaton on a grid. Key features of this script include:
+This script defines the `CellularAutomaton` class, which simulates a cellular automaton on a grid. 
+Key features of this script include:
 
 - **Grid Initialization**: Methods for setting the initial state of the grid, either randomly or with a single live cell in the center.
 - **Rule Application**: Functionality to apply birth and survival rules to the grid to generate the next state.
@@ -33,7 +34,8 @@ This script defines the `CellularAutomaton` class, which simulates a cellular au
 
 ### geneticAlgorithm.py
 
-This script implements a genetic algorithm to evolve the rules of the cellular automaton defined in `cellularAutomaton.py`. Key features include:
+This script implements a genetic algorithm to evolve the rules of the cellular automaton defined in `cellularAutomaton.py`. 
+Key features include:
 
 - **Rule Generation**: Creates random initial rules for the cellular automaton.
 - **Fitness Evaluation**: Uses the fitness functions from `cellularAutomaton.py` to evaluate each rule.
