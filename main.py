@@ -31,11 +31,11 @@ if __name__ == "__main__":
 
         SELEKCE
         PRO SELEKCI TURNAJOVOU NASTAVIT DO PROMĚNNÉ selection = 't'
-        PRO SELEKCI VÁŽENOU RULETOU NASTAVIT DO PROMĚNNÉ selection = 'r'
+        PRO SELEKCI RULETOVÝM KOLEM NASTAVIT DO PROMĚNNÉ selection = 'r'
         --------------------------------------------------------
         SELECTION
         FOR TOURNAMENT SELECTION SET VARIABLE selection = 't'
-        FOR TOURNAMENT SELECTION SET VARIABLE selection = 'r'
+        FOR ROULLETTE WHEEL SELECTION SET VARIABLE selection = 'r'
         
         FITNESS FUNKCE
         'min' - CO NEJMENŠÍ ČETNOST ŽIVÝCH BUNĚK NA MŘÍŽCE V PRŮBĚHU SIMULACE 

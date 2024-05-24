@@ -97,11 +97,11 @@ class GeneticAlgorithm:
         """ 
         VÝBĚR DVOU RODIČŮ PRO KŘÍŽENÍ (METODA VÁŽENÉ RULETY NEBO TURNAJE)
         PRO SELEKCI TURNAJOVOU NASTAVIT DO PROMĚNNÉ selection = 't'
-        PRO SELEKCI VÁŽENOU RULETOU NASTAVIT DO PROMĚNNÉ selection = 'r'
+        PRO SELEKCI RULETOVÝM KOLEM NASTAVIT DO PROMĚNNÉ selection = 'r'
         ------------------------------------------------------------------
         SELECTS TWO PARENTS FOR CROSSBREEDING (WEIGHTED ROULETTE OR TOURNAMENT SELECTION)
         FOR TOURNAMENT SELECTION SET VARIABLE selection = 't'
-        FOR TOURNAMENT SELECTION SET VARIABLE selection = 'r'
+        FOR ROULETTE WHEEL SELECTION SET VARIABLE selection = 'r'
         """
         if self.selection == "t":
             return self.tournament_selection(fitness_values, tournament_size)
