@@ -18,7 +18,7 @@ class GeneticAlgorithm:
         """ 
         KONTROLA SPRÁVNOSTI FORMÁTU PRAVIDEL
         ------------------------------------
-        CHECKS THE CORRECTNESS OF THE RULES
+        CHECKS THE CORRECTNESS OF THE RULES 
         """
         b, s = rule.split('/')
         sorted_b = ''.join(sorted(set(b)))

@@ -3,7 +3,7 @@ import time
 
 if __name__ == "__main__":
     """ 
-        ROMĚRY MŘÍŽKY CELULÁRNÍHO AUTOMATU
+        ROMĚRY MŘÍŽKY CELULÁRNÍHO AUTOMATU 
         rows - POČET BUNĚK V ŘÁDKU
         cols - POČET BUNĚK V SLOUPCI
         -----------------------------

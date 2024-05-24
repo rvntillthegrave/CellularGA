@@ -5,7 +5,7 @@ import re
 class CellularAutomaton:
     def __init__(self, rows, cols, initial_grid=None):
         self.rows = rows
-        self.cols = cols
+        self.cols = cols 
         if initial_grid is not None:
             self.grid = initial_grid.copy()
             self.initial_grid = initial_grid.copy()
